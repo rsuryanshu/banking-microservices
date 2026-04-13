@@ -1,0 +1,19 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: auth-service
+
+  config:
+    import: classpath:common-config.yaml
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/auth_db
+    username: root
+    password: Tekejob$12%@
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

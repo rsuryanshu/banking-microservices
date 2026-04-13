@@ -1,0 +1,49 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: transaction-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/transaction_db
+    username: root
+    password: Tekejob$12%@
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  config:
+    import: classpath:common-config.yaml
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      account-service:
+        sliding-window-size: 10          # last 10 requests are monitored
+        failure-rate-threshold: 50       # if 50% fail, circuit opens
+        wait-duration-in-open-state: 10s # wait 10s before trying again
+        permitted-number-of-calls-in-half-open-state: 3  # try 3 calls in half-open
+        register-health-indicator: true
+
+      notification-service:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        register-health-indicator: true
+
+  timelimiter:
+    instances:
+      account-service:
+        timeout-duration: 3s             # if no response in 3s, count as failure
+      notification-service:
+        timeout-duration: 3s

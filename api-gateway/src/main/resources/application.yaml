@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  config:
+    import: classpath:common-config.yaml
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: account-service
+              uri: lb://account-service
+              predicates:
+                - Path=/accounts/**
+              filters:
+                - StripPrefix=1
+
+            - id: transaction-service
+              uri: lb://transaction-service
+              predicates:
+                - Path=/transactions/**
+              filters:
+                - StripPrefix=1
+
+            - id: notification-service
+              uri: lb://transaction-service
+              predicates:
+                - Path=/notifications/**
+              filters:
+                - StripPrefix=1
+
+            - id: auth-service
+              uri: lb://auth-service
+              predicates:
+                - Path=/users/**
+              filters:
+                - StripPrefix=1
