@@ -25,7 +25,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private static final String AUTHORIZATION_KEY = "Authorization";
-    private static final List<String> excludedPaths = Arrays.asList("/auth", "/actuator", "/swagger-ui");
+    private static final List<String> excludedPaths = Arrays.asList(
+            "/auth",
+            "/actuator",
+            "/swagger-ui",
+            "/v3/api-docs",
+            "/accounts/v3/api-docs",
+            "/transactions/v3/api-docs",
+            "/notifications/v3/api-docs",
+            "/users/v3/api-docs",
+            "/webjars"
+    );
 
 
     @Override

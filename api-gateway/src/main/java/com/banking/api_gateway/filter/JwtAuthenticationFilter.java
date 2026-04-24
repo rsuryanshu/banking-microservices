@@ -29,7 +29,18 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
 
-    private static final List<String> OPEN_PATHS = List.of("/users/auth/login", "/users/auth/register", "/actuator");
+    private static final List<String> OPEN_PATHS = List.of(
+            "/users/auth/login",
+            "/users/auth/register",
+            "/actuator",
+            "/swagger-ui",
+            "/v3/api-docs",
+            "/accounts/v3/api-docs",
+            "/transactions/v3/api-docs",
+            "/notifications/v3/api-docs",
+            "/users/v3/api-docs",
+            "/webjars"
+    );
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

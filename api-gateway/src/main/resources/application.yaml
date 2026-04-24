@@ -28,7 +28,7 @@ spring:
                 - StripPrefix=1
 
             - id: notification-service
-              uri: lb://transaction-service
+              uri: lb://notification-service
               predicates:
                 - Path=/notifications/**
               filters:
@@ -40,3 +40,21 @@ spring:
                 - Path=/users/**
               filters:
                 - StripPrefix=1
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /users/v3/api-docs
+      - name: account-service
+        url: /accounts/v3/api-docs
+      - name: transaction-service
+        url: /transactions/v3/api-docs
+      - name: notification-service
+        url: /notifications/v3/api-docs
+    enabled: true
+  webjars:
+    prefix: ""
+  api-docs:
+    enabled: true

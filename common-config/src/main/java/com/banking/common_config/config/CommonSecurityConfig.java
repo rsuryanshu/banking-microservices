@@ -30,7 +30,14 @@ import java.util.List;
 @ConditionalOnMissingBean(SecurityFilterChain.class)
 public class CommonSecurityConfig {
 
-    private static final String[] OPEN = {"/auth/**", "/actuator/**", "/swagger-ui/**"};
+    private static final String[] OPEN = {
+            "/auth/**",
+            "/actuator/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/webjars/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) {
