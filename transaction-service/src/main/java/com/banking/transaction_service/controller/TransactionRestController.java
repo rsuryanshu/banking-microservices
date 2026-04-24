@@ -18,7 +18,7 @@ public class TransactionRestController {
     @PostMapping("/transaction/process")
     public TransactionDTO processTransaction(@RequestParam("accountNumber") String accountNumber,
                                              @RequestParam("amount") BigDecimal amount, @RequestParam("type") String type) {
-        return transactionService.processTransaction(accountNumber, amount, type);
+        return transactionService.initiateTransaction(accountNumber, amount, type);
     }
 
     @GetMapping("/transaction/{accountNumber}")

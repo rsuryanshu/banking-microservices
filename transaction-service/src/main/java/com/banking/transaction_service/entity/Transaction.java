@@ -17,8 +17,12 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
+    private String transactionId;
     private String accountNumber;
     private BigDecimal amount;
     private String type;             // CREDIT or DEBIT
+    private String status;
+    private String failureReason;
     private LocalDateTime createdAt;
 }
