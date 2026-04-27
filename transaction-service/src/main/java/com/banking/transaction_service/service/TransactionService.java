@@ -63,9 +63,18 @@ public class TransactionService {
 
         TransactionDTO transactionDTO = new TransactionDTO(transactionRepository.save(transaction));
 
-        TransactionInitiatedEvent event = new TransactionInitiatedEvent(transactionId, accountNumber,
-                amount, type);
-        kafkaTemplate.send("transaction-initiated", event);
+        try {
+            TransactionInitiatedEvent event = new TransactionInitiatedEvent(transactionId, accountNumber,
+                    amount, type);
+            kafkaTemplate.send("transaction-initiated", event);
+        } catch (Exception e) {
+            transaction.setStatus("FAILED");
+            transaction.setFailureReason("Messaging service unavailable");
+            transactionRepository.save(transaction);
+            transactionDTO.setStatus(transaction.getStatus());
+            transactionDTO.setFailureReason(transaction.getFailureReason());
+            log.error("Failed to publish transaction event: {}", e.getMessage());
+        }
         return transactionDTO;
     }
 
