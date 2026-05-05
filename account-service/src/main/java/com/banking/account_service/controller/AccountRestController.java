@@ -33,13 +33,18 @@ public class AccountRestController {
 
     @GetMapping("/account/number/{accountNumber}")
     public AccountDTO getAccountByNumber(@PathVariable String accountNumber) {
-        log.info("Inside getAccountByNumber");
-        return accountService.findByAccountNumber(accountNumber);
+        log.info("Init api/account/number/{}", accountNumber);
+        AccountDTO number = accountService.findByAccountNumber(accountNumber);
+        log.info("Ended /api/account/number/{} successfully", accountNumber);
+        return number;
     }
 
     @PutMapping("/account/{accountNumber}/balance")
     public AccountDTO updateBalance(@PathVariable String accountNumber, @RequestParam("amount") BigDecimal amount,
                                     @RequestParam("type") String type) {
-        return accountService.updateBalance(accountNumber, amount, type);
+        log.info("Init api/account/{}/balance/{}", accountNumber, amount);
+        AccountDTO accountDTO = accountService.updateBalance(accountNumber, amount, type);
+        log.info("Ended /api/account/{}/balance successfully", accountNumber);
+        return accountDTO;
     }
 }

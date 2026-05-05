@@ -51,6 +51,7 @@ public class TransactionService {
     }
 
     public TransactionDTO initiateTransaction(String accountNumber, BigDecimal amount, String type) {
+        log.info("Init initiateTransaction method");
         String transactionId = UUID.randomUUID().toString();
 
         Transaction transaction = new Transaction();
@@ -75,11 +76,14 @@ public class TransactionService {
             transactionDTO.setFailureReason(transaction.getFailureReason());
             log.error("Failed to publish transaction event: {}", e.getMessage());
         }
+
+        log.info("Ended initiateTransaction successfully");
         return transactionDTO;
     }
 
     @KafkaListener(topics = "balance-updated", groupId = "transaction-service")
     public void handleBalanceUpdated(BalanceUpdatedEvent event) {
+        log.info("Init handleBalanceUpdated method");
         Transaction transaction = transactionRepository
                 .findByTransactionId(event.getTransactionId());
 
@@ -97,7 +101,7 @@ public class TransactionService {
             transaction.setFailureReason(event.getFailureReason());
             log.warn("Transaction {} failed: {}", event.getTransactionId(), event.getFailureReason());
         }
-
+        log.info("Ended handleBalanceUpdated successfully");
         transactionRepository.save(transaction);
     }
 

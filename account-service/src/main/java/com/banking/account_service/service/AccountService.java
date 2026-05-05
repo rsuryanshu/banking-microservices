@@ -44,14 +44,17 @@ public class AccountService {
 
     @LogExecutionTime
     public AccountDTO findByAccountNumber(String accountNumber) {
+        log.info("Init findByAccountNumber method");
         Account account = accountRepository.findByAccountNumber(accountNumber);
         if (account == null) {
             throw new BankingException(BankingExceptionType.ACCOUNT_NOT_FOUND, "Bank Account not found");
         }
+        log.info("Ended findByAccountNumber method successfully");
         return new AccountDTO(account);
     }
 
     public AccountDTO updateBalance(String accountNumber, BigDecimal amount, String type) {
+        log.info("Init updateBalance method");
         Account account = accountRepository.findByAccountNumber(accountNumber);
         if (account == null) {
             throw new BankingException(BankingExceptionType.ACCOUNT_NOT_FOUND, "Bank Account not found");
@@ -64,11 +67,13 @@ public class AccountService {
         BigDecimal delta = "CREDIT".equals(type) ? amount : amount.negate();
         account.setBalance(account.getBalance().add(delta));
         accountRepository.save(account);
+        log.info("Ended updateBalance successfully");
         return new AccountDTO(account);
     }
 
     @KafkaListener(topics = "transaction-initiated", groupId = "account-service")
     public void handleTransactionInitiated(TransactionInitiatedEvent event) {
+        log.info("Init handleTransactionInitiated method");
         BalanceUpdatedEvent response = new BalanceUpdatedEvent();
         response.setTransactionId(event.getTransactionId());
         response.setAccountNumber(event.getAccountNumber());
@@ -97,7 +102,7 @@ public class AccountService {
             response.setFailureReason(e.getMessage());
             log.warn("Balance update failed for transaction {}: {}", event.getTransactionId(), e.getMessage());
         }
-
+        log.info("Ended handleTransactionInitiated method successfully");
         kafkaTemplate.send("balance-updated", response);
     }
 }
