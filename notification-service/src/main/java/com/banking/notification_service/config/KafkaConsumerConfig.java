@@ -1,7 +1,10 @@
 package com.banking.notification_service.config;
 
+import brave.Tracing;
+import brave.kafka.clients.KafkaTracing;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +27,9 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
 
+    @Autowired
+    private Tracing tracing;
+
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
         JacksonJsonDeserializer<Object> deserializer = new JacksonJsonDeserializer<>(Object.class);
@@ -37,13 +43,21 @@ public class KafkaConsumerConfig {
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
 
-        return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
+        DefaultKafkaConsumerFactory<String, Object> factory =
+                new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
+
+        factory.addPostProcessor(consumer ->
+                KafkaTracing.create(tracing).consumer(consumer));
+
+        return factory;
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+
+        factory.getContainerProperties().setObservationEnabled(true);
         return factory;
     }
 }

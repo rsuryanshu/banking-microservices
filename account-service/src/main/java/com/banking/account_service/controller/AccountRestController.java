@@ -4,6 +4,7 @@ import com.banking.account_service.dto.AccountDTO;
 import com.banking.account_service.entity.Account;
 import com.banking.account_service.service.AccountService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 @RestController
 @RequestMapping("/api")
 @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+@Slf4j
 public class AccountRestController {
 
     @Autowired
@@ -31,6 +33,7 @@ public class AccountRestController {
 
     @GetMapping("/account/number/{accountNumber}")
     public AccountDTO getAccountByNumber(@PathVariable String accountNumber) {
+        log.info("Inside getAccountByNumber");
         return accountService.findByAccountNumber(accountNumber);
     }
 
