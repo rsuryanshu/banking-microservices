@@ -71,6 +71,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        String tokenType = jwtUtil.extractTokenType(token);
+        if ("REFRESH".equals(tokenType)) {
+            log.error("Refresh token cannot be used for API access");
+            response.getWriter().write("Refresh token cannot be used for API access");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
         try {
             String username = jwtUtil.extractUsername(token);
             List<String> roles = jwtUtil.extractRole(token);

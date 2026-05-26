@@ -17,21 +17,39 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private Long expiration;
+    @Value("${jwt.access-token.expiration:900000}")      // 15 minutes default
+    private Long accessTokenExpiration;
+
+    @Value("${jwt.refresh-token.expiration:604800000}")  // 7 days default
+    private Long refreshTokenExpiration;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String username, List<String> roles) {
+    public String generateAccessToken(String username, List<String> roles) {
         return Jwts.builder()
                 .subject(username)
                 .claim("role", roles)
+                .claim("type", "ACCESS")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public String generateRefreshToken(String username) {
+        return Jwts.builder()
+                .subject(username)
+                .claim("type", "REFRESH")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String extractTokenType(String token) {
+        return getClaims(token).get("type", String.class);
     }
 
     public String extractUsername(String token) {

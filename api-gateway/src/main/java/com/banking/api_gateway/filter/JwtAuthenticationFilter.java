@@ -32,6 +32,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     private static final List<String> OPEN_PATHS = List.of(
             "/users/auth/login",
             "/users/auth/register",
+            "/users/auth/refresh",
+            "/users/auth/logout",
             "/actuator",
             "/swagger-ui",
             "/v3/api-docs",
